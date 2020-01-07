@@ -809,6 +809,8 @@ func (s *State) OnInterface(se *Session, i interface{}) (err error) {
 	switch t := i.(type) {
 	case *GuildCreate:
 		err = s.GuildAdd(t.Guild)
+	case *GuildSync:
+		err = s.GuildAdd(t.Guild)
 	case *GuildUpdate:
 		err = s.GuildAdd(t.Guild)
 	case *GuildDelete:

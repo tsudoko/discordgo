@@ -27,6 +27,7 @@ const (
 	guildRoleCreateEventType          = "GUILD_ROLE_CREATE"
 	guildRoleDeleteEventType          = "GUILD_ROLE_DELETE"
 	guildRoleUpdateEventType          = "GUILD_ROLE_UPDATE"
+	guildSyncEventType                = "GUILD_SYNC"
 	guildUpdateEventType              = "GUILD_UPDATE"
 	messageAckEventType               = "MESSAGE_ACK"
 	messageCreateEventType            = "MESSAGE_CREATE"
@@ -434,6 +435,26 @@ func (eh guildRoleUpdateEventHandler) New() interface{} {
 // Handle is the handler for GuildRoleUpdate events.
 func (eh guildRoleUpdateEventHandler) Handle(s *Session, i interface{}) {
 	if t, ok := i.(*GuildRoleUpdate); ok {
+		eh(s, t)
+	}
+}
+
+// guildSyncEventHandler is an event handler for GuildSync events.
+type guildSyncEventHandler func(*Session, *GuildSync)
+
+// Type returns the event type for GuildSync events.
+func (eh guildSyncEventHandler) Type() string {
+	return guildSyncEventType
+}
+
+// New returns a new instance of GuildSync.
+func (eh guildSyncEventHandler) New() interface{} {
+	return &GuildSync{}
+}
+
+// Handle is the handler for GuildSync events.
+func (eh guildSyncEventHandler) Handle(s *Session, i interface{}) {
+	if t, ok := i.(*GuildSync); ok {
 		eh(s, t)
 	}
 }
@@ -957,6 +978,8 @@ func handlerForInterface(handler interface{}) EventHandler {
 		return guildRoleDeleteEventHandler(v)
 	case func(*Session, *GuildRoleUpdate):
 		return guildRoleUpdateEventHandler(v)
+	case func(*Session, *GuildSync):
+		return guildSyncEventHandler(v)
 	case func(*Session, *GuildUpdate):
 		return guildUpdateEventHandler(v)
 	case func(*Session, *MessageAck):
@@ -1028,6 +1051,7 @@ func init() {
 	registerInterfaceProvider(guildRoleCreateEventHandler(nil))
 	registerInterfaceProvider(guildRoleDeleteEventHandler(nil))
 	registerInterfaceProvider(guildRoleUpdateEventHandler(nil))
+	registerInterfaceProvider(guildSyncEventHandler(nil))
 	registerInterfaceProvider(guildUpdateEventHandler(nil))
 	registerInterfaceProvider(messageAckEventHandler(nil))
 	registerInterfaceProvider(messageCreateEventHandler(nil))

@@ -78,6 +78,11 @@ type GuildCreate struct {
 	*Guild
 }
 
+// GuildSync is the data for a GuildSync event.
+type GuildSync struct {
+	*Guild
+}
+
 // GuildUpdate is the data for a GuildUpdate event.
 type GuildUpdate struct {
 	*Guild

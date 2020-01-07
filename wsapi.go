@@ -398,6 +398,28 @@ func (s *Session) UpdateStatusComplex(usd UpdateStatusData) (err error) {
 	return
 }
 
+type guildSyncOp struct {
+	Op   int      `json:"op"`
+	Data []string `json:"d"`
+}
+
+// GuildSync requests a GuildSync event for specified guild IDs.
+func (s *Session) GuildSync(guildIDs []string) (err error) {
+	s.log(LogInformational, "called")
+
+	s.RLock()
+	defer s.RUnlock()
+	if s.wsConn == nil {
+		return ErrWSNotFound
+	}
+
+	s.wsMutex.Lock()
+	err = s.wsConn.WriteJSON(guildSyncOp{12, guildIDs})
+	s.wsMutex.Unlock()
+
+	return
+}
+
 type requestGuildMembersData struct {
 	GuildID string `json:"guild_id"`
 	Query   string `json:"query"`
